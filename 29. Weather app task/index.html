@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <div class="app">
+    <h1>🌤 Weather App</h1>
+
+    <form onsubmit="getWeather(); return false">
+      <input type="text" id="cityName" placeholder="Enter city name" required />
+      <button type="submit">Search</button>
+    </form>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    function getWeather() {
+      let cityName = document.getElementById("cityName").value;
+      let resultDiv = document.getElementById("result");
+
+      resultDiv.innerHTML = "Loading... ⏳";
+
+      axios
+        .get(`https://api.weatherapi.com/v1/current.json?key=7bf713a100cb434db71182043222906&q=${cityName}&aqi=no`)
+        .then(function (response) {
+          let data = response.data;
+
+          let time = moment(data.location.localtime)
+            .format("Do MMMM YYYY, h:mm A");
+
+          resultDiv.innerHTML = `
+            <h2>${data.location.name}, ${data.location.country}</h2>
+            <p>🕒 ${time}</p>
+            <p>🌡 Temperature: ${data.current.temp_c} °C</p>
+            <p>💧 Humidity: ${data.current.humidity}%</p>
+            <p>☁ Condition: ${data.current.condition.text}</p>
+          `;
+        })
+        .catch(function () {
+          resultDiv.innerHTML = "❌ City not found. Try again.";
+        });
+    }
+  </script>
+
+</body>
+</html>
